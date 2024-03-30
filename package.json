@@ -1,0 +1,19 @@
+{
+  "name": "diemdanh",
+  "version": "1.0.0",
+  "description": "he thong diem danh cua lab 2S",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "keywords": [
+    "nodejs",
+    "react"
+  ],
+  "author": "duong van dung",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}
