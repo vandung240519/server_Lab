@@ -4,7 +4,7 @@ const bodyParser = require('body-parser');
 const app = express();
 const path = require('path');
 const port = 1602;
-const host = "192.168.1.71";
+const host = "10.136.90.115";
 
 
 
@@ -14,6 +14,9 @@ app.use(express.json());
 app.use(express.static('public'));
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
+app.use(express.static(path.join(__dirname, 'public')));
+
+const DB_PATH = 'C:/sqlite/db/dulieudiemdanh.db'
 
 
 
@@ -45,6 +48,8 @@ app.post('/register', (req, res) => {
 app.get('/dangki', function (req, res) {
   //Gửi file HTML trong thư mục "public"
   res.sendFile(__dirname + '/public/dangki.html');
+  
+
 });
 
 app.get('/danhsach', (req, res) => {
@@ -61,7 +66,35 @@ app.get('/danhsach', (req, res) => {
               console.error(err.message);
               res.status(500).send(err.message);
           }
-           res.render('index.ejs', {data: rows});
+           res.render('thanhvien.ejs', {data: rows});
+      });
+  });
+
+  db.close(err => {
+      if (err) {
+          console.error(err.message);
+      }
+      console.log('Close the database connection.');
+  });
+});
+
+
+
+app.get('/danhsachdiemdanh', (req, res) => {
+  let db = new sqlite3.Database('C:/sqlite/db/dulieudiemdanh.db', sqlite3.OPEN_READWRITE, (err) => {
+    if (err) {
+      console.error(err.message);
+    }
+    console.log('Connected to the SQlite database.');
+  });
+
+  db.serialize(() => {
+      db.all("SELECT * FROM output", (err, rows) => {
+          if (err) {
+              console.error(err.message);
+              res.status(500).send(err.message);
+          }
+           res.render('output.ejs', {data: rows});
       });
   });
 
@@ -123,7 +156,7 @@ function checkMac(mac, callback) {
     console.log('Close the database connection.');
   });
 };
-app.post("/:mac", function (req ,res) {
+app.post('/:mac', function (req ,res) {
 
   const macAddress =req.params.mac;
 
@@ -172,6 +205,7 @@ app.post("/:mac", function (req ,res) {
     console.log('Close the database connection.');
   });
 });
+
 
 
 
