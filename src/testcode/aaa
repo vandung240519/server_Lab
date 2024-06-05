@@ -1,0 +1,49 @@
+app.post("/:mac", function (req ,res) {
+
+  const macAddress =req.params.mac;
+
+  console.log(`MAC Address Received: ${macAddress}`);
+  res.send(`MAC Address Received: ${macAddress}`);
+
+  const Time = getTime();
+  let db = new sqlite3.Database('C:/sqlite/db/dulieudiemdanh.db', sqlite3.OPEN_READWRITE, (err) => {
+    if (err) {
+      console.error(err.message);
+    }
+    console.log('Connected to the dulieu.');
+  });
+
+  let dataInput = [macAddress, Time];
+  let sqlInsertInput = "INSERT INTO Input (Mac,Time) VALUES (?,?);"
+
+  db.run(sqlInsertInput, dataInput, function (err) {
+    if (err) {
+      return console.error(err.message);
+    };
+    console.log(`Row inserted ${this.changes}`)
+  });
+
+  checkMac(macAddress, (err, Ten) => {
+    if (err) {
+      // Handle error
+    }
+    if (Ten) {
+      // MAC found, let's insert in Output
+      let dataOutput = [Ten, macAddress, Time];
+      let sqlInsertOutput = "INSERT INTO output (Ten,Mac,Time) VALUES (?,?,?);";
+      db.run(sqlInsertOutput, dataOutput, function (err) {
+        if (err) {
+          return console.error(err.message);
+        }
+        console.log(`Row inserted ${this.changes}`);
+      });
+    }
+  });
+
+  db.close((err) => {
+    if (err) {
+      console.error(err.message);
+    }
+    console.log('Close the database connection.');
+  });
+});
